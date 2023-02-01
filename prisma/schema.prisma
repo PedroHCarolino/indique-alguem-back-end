@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model usuarios {
+  id                                Int                                 @id @default(autoincrement())
+  nomeCompleto                      String                              @map("nome_completo") @db.VarChar(255)
+  email                             String?                             @unique @db.VarChar(255)
+  password                          String?                             @db.VarChar(32)
+  phone                             String?                             @db.VarChar(20)
+  cpfOrCnpj                         String?                             @unique(map: "cpf_or_cnpj") @db.VarChar(40)
+  dataNascimento                    DateTime?                           @map("data_nascimento") @db.Date
+  endereco                          enderecos[]
+  avaliacoesOnUsuariosOnPrestadores avaliacoesOnUsuariosOnPrestadores[]
+  certificadosOnUsuarios            certificadosOnUsuarios[]
+  atividadeOnUsuarios               atividadeOnUsuarios[]
+  atividadesProfissionais           atividadesProfissionais[]
+}
+
+model enderecos {
+  id          Int      @id @default(autoincrement())
+  logradouro  String   @db.VarChar(100)
+  cep         String?  @db.VarChar(9)
+  numero      String?  @db.VarChar(9)
+  bairro      String?  @db.VarChar(100)
+  complemento String?  @db.VarChar(255)
+  cidade      String?  @db.VarChar(255)
+  estado      String?  @db.VarChar(50)
+  usuario     usuarios @relation(fields: [usuarioId], references: [id])
+  usuarioId   Int      @map("usuario_id")
+}
+
+// model prestadores {
+//   id                                Int                                 @id @default(autoincrement())
+//   escolaridade                      String                              @db.VarChar(100)
+//   usuario                           usuarios                            @relation(fields: [usuarioId], references: [id])
+//   usuarioId                         Int                                 @map("usuario_id")
+//   certificadosOnPrestadores         certificadosOnPrestadores[]
+//   atividadesOnPrestadores           atividadeOnPrestadores[]
+//   avaliacoesOnUsuariosOnPrestadores avaliacoesOnUsuariosOnPrestadores[]
+// }
+
+model certificados {
+  id                     Int                      @id @default(autoincrement())
+  formacao               String                   @db.VarChar(100)
+  periodoFormacao        String                   @map("periodo_formacao") @db.VarChar(100)
+  certificadosOnUsuarios certificadosOnUsuarios[]
+}
+
+model certificadosOnUsuarios {
+  id            Int          @id @default(autoincrement())
+  usuarioId     Int          @map("usuario_id")
+  usuarios      usuarios     @relation(fields: [usuarioId], references: [id])
+  certificadoId Int          @map("certificado_id")
+  certificado   certificados @relation(fields: [certificadoId], references: [id])
+}
+
+model atividadesProfissionais {
+  id                   Int                   @id @default(autoincrement())
+  atividade            String                @db.VarChar(150)
+  tempoExperiencia     String                @map("tempo_experiencia") @db.VarChar(50)
+  atividadesOnUsuarios atividadeOnUsuarios[]
+  usuarios             usuarios[]
+}
+
+
+model atividadeOnUsuarios {
+  id                        Int                     @id @default(autoincrement())
+  atividadesProfissionaisId Int                     @map("atividades_profissionais_id")
+  atividadesProfissionais   atividadesProfissionais @relation(fields: [atividadesProfissionaisId], references: [id])
+  usuarioId                 Int                     @map("usuario_id")
+  usuarios                  usuarios                @relation(fields: [usuarioId], references: [id])
+}
+
+model avaliacoes {
+  id                                Int                                 @id @default(autoincrement())
+  comentario                        String                              @db.VarChar(255)
+  dataAvaliacao                     DateTime                            @map("data_avaliacao")
+  avaliacoesOnUsuariosOnPrestadores avaliacoesOnUsuariosOnPrestadores[]
+}
+
+model avaliacoesOnUsuariosOnPrestadores {
+  id          Int        @id @default(autoincrement())
+  avaliacaoId Int        @map("avaliacao_id")
+  avaliacao   avaliacoes @relation(fields: [avaliacaoId], references: [id])
+  usuarioId   Int        @map("usuario_id")
+  usuario     usuarios   @relation(fields: [usuarioId], references: [id])
+}
