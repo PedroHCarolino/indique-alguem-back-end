@@ -14,7 +14,41 @@ const getAllUsuariosByAtividade = async (req, res) => {
   res.send(usuarios)
 }
 
+const criarAtividade = async (req, res) => {
+  try {
+    const data = req.body
+    const endereco = await prisma.atividadesProfissionais.create({data})
+    res.send(endereco)
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+const atualizarAtividade = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const data = req.body;
+    const resultado = await prisma.atividadesProfissionais.update({ where: {id}, data});
+    res.send(resultado)
+  } catch (err) {
+    console.log(err)
+  }
+}
+const deletarAtividade = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const resultado = await prisma.atividadesProfissionais.delete({ where: {id}});
+    res.send(resultado)
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+
 module.exports = {
   getAllUsuarios,
-  getAllUsuariosByAtividade
+  getAllUsuariosByAtividade,
+  criarAtividade,
+  atualizarAtividade,
+  deletarAtividade
 }

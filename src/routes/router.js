@@ -7,6 +7,7 @@ const enderecoCrtl = require('../controllers/enderecoUser')
 
 
 routs.get('/usuarios', userCrtl.getAllUser);
+routs.get('/usuarios/search', userCrtl.getUserByProfission);
 routs.post('/usuarios', userCrtl.createUser);
 routs.post('/usuarios/auth', userCrtl.authUser);
 routs.put('/usuarios/:id', userCrtl.updateUser);
